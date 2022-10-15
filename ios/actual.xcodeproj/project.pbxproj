@@ -192,7 +192,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				1A00931D23A94EBA00FE6B5A /* Compile backend for nodejs-mobile */,
 				D3D11ECDEE72EE1F374A8692 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -273,25 +272,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"RUNNING\"\nexport SENTRY_PROPERTIES=sentry.properties\nexport NODE_BINARY=node\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nif [ \"${CONFIGURATION}\" == \"Debug\" ]; then\n  export SKIP_BUNDLING=true\nfi\necho \"BUNDLING\"\n# For whatever reason, --force-foreground is required for it to upload sourcemaps\n# to Sentry\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode  --force-foreground ../node_modules/react-native/scripts/react-native-xcode.sh\n";
-		};
-		1A00931D23A94EBA00FE6B5A /* Compile backend for nodejs-mobile */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Compile backend for nodejs-mobile";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo $(pwd)\ncd ../../loot-core/bin\n\nif [ \"${CONFIGURATION}\" == \"Debug\" ]; then\n  export NODE_ENV=\"development\"\n  ./build-mobile\nelse \n  export NODE_ENV=\"production\"\n  VERSION=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleShortVersionString\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\")\n  DIST=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleVersion\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\")\n  \n  ./build-mobile --release --version \"${VERSION}\" --dist \"${DIST}\"\nfi\n";
+			shellScript = "echo \"RUNNING\"\nexport SENTRY_PROPERTIES=sentry.properties\nexport NODE_BINARY=node\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nif [ \"${CONFIGURATION}\" == \"Debug\" ]; then\n  export SKIP_BUNDLING=true\nfi\necho \"BUNDLING\"\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		AA16FDFD29699DAA2114A3E9 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

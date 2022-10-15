@@ -1,32 +1,31 @@
-import React, { useState } from 'react';
-import { View, Text, Platform } from 'react-native';
-import { connect } from 'react-redux';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import * as actions from 'loot-core/src/client/actions';
-import KeyboardAvoidingView from 'loot-design/src/components/mobile/KeyboardAvoidingView';
-import Stack from 'loot-design/src/components/Stack';
-import { send } from 'loot-core/src/platform/client/fetch';
-import { colors, mobileStyles as styles } from 'loot-design/src/style';
-import SingleInput from './SingleInput';
-import Header from './Header';
-import TransitionView from './TransitionView';
-import { setupPurchases, getOfferings } from '../../util/iap';
+import React, { useState } from "react";
+import { View, Text, Platform } from "react-native";
+import { connect } from "react-redux";
+import { SafeAreaView } from "react-native-safe-area-context";
+import * as actions from "loot-core/src/client/actions";
+import KeyboardAvoidingView from "loot-design/src/components/mobile/KeyboardAvoidingView";
+import Stack from "loot-design/src/components/Stack";
+import { send } from "loot-core/src/platform/client/fetch";
+import { colors, mobileStyles as styles } from "loot-design/src/style";
+import SingleInput from "./SingleInput";
+import Header from "./Header";
+import TransitionView from "./TransitionView";
 
 function getErrorMessage(error) {
   switch (error) {
-    case 'not-confirmed':
-      return 'Invalid code';
-    case 'expired':
-      return 'Code is expired. Go back to resend a new code.';
-    case 'too-many-attempts':
-      return 'Too many attempts to login. Go back to resend a new code.';
+    case "not-confirmed":
+      return "Invalid code";
+    case "expired":
+      return "Code is expired. Go back to resend a new code.";
+    case "too-many-attempts":
+      return "Too many attempts to login. Go back to resend a new code.";
     default:
       return "Whoops, an error occurred on our side! We'll try to get it fixed soon.";
   }
 }
 
 function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
-  let [code, setCode] = useState('');
+  let [code, setCode] = useState("");
   let [loading, setLoading] = useState(false);
   let [error, setError] = useState(null);
 
@@ -37,7 +36,7 @@ function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
     setLoading(true);
 
     let { confirmed, error, userId, key, validSubscription } = await send(
-      'subscribe-confirm',
+      "subscribe-confirm",
       { email, code }
     );
 
@@ -46,16 +45,11 @@ function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
       setError(getErrorMessage(error));
     } else if (!confirmed) {
       setLoading(false);
-      setError(getErrorMessage('not-confirmed'));
+      setError(getErrorMessage("not-confirmed"));
     } else if (!validSubscription) {
-      if (Platform.OS === 'ios') {
-        // Eagerly load in the offerings (otherwise the subscribe button
-        // shows a loading state which is weird)
-        await setupPurchases({ id: userId, email: email });
-        await getOfferings();
-
+      if (Platform.OS === "ios") {
         setLoading(false);
-        navigation.navigate('Subscribe', { email, userId, key });
+        navigation.navigate("Subscribe", { email, userId, key });
       } else {
         // This is a "half-created" account, right now on Android we
         // don't fix it here, we just tell the user. This is super
@@ -63,7 +57,7 @@ function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
         // doesn't subscribe, and then tries to log in on Android with
         // that account
         alert(
-          'An error occurred loading your account. Please contact help@actualbudget.com for support'
+          "An error occurred loading your account. Please contact help@actualbudget.com for support"
         );
         setLoading(false);
       }
@@ -77,7 +71,7 @@ function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
       if (global.SentryClient) {
         global.SentryClient.setUser({
           id: userId,
-          ip_address: '{{auto}}'
+          ip_address: "{{auto}}",
         });
       }
     }
@@ -85,7 +79,7 @@ function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
 
   let textStyle = [
     styles.text,
-    { fontSize: 17, lineHeight: 25, color: 'white' }
+    { fontSize: 17, lineHeight: 25, color: "white" },
   ];
 
   return (
@@ -94,7 +88,7 @@ function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
         <TransitionView navigation={navigation}>
           <Header
             navigation={navigation}
-            buttons={['back', 'demo']}
+            buttons={["back", "demo"]}
             loadDemoBudget={() => createBudget({ demoMode: true })}
           />
 
@@ -116,7 +110,7 @@ function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
               value={code}
               loading={loading}
               error={error}
-              inputProps={{ keyboardType: 'numeric' }}
+              inputProps={{ keyboardType: "numeric" }}
               onChange={setCode}
               onSubmit={onConfirm}
             />
@@ -127,7 +121,4 @@ function Confirm({ route, navigation, getUserData, loginUser, createBudget }) {
   );
 }
 
-export default connect(
-  null,
-  actions
-)(Confirm);
+export default connect(null, actions)(Confirm);

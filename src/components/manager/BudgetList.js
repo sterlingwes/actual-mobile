@@ -1,38 +1,37 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StatusBar } from 'react-native';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { connectActionSheet } from '@expo/react-native-action-sheet';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, mobileStyles as styles } from 'loot-design/src/style';
-import * as actions from 'loot-core/src/client/actions';
-import { RectButton } from 'react-native-gesture-handler';
-import { Button } from 'loot-design/src/components/mobile/common';
-import { ListItem, ROW_HEIGHT } from 'loot-design/src/components/mobile/table';
-import Loading from 'loot-design/src/svg/v1/AnimatedLoading';
-import CloudCheck from 'loot-design/src/svg/v1/CloudCheck';
-import CloudDownload from 'loot-design/src/svg/v1/CloudDownload';
-import CloudUnknown from 'loot-design/src/svg/v2/CloudUnknown';
-import FileDouble from 'loot-design/src/svg/v1/FileDouble';
-import RefreshArrow from 'loot-design/src/svg/v2/RefreshArrow';
-import DotsHorizontalTriple from 'loot-design/src/svg/v1/DotsHorizontalTriple';
-import Modal from '../modals/Modal';
-import UserButton from './UserButton';
-import * as iap from '../../util/iap.js';
+import React, { useState } from "react";
+import { View, Text, FlatList, StatusBar } from "react-native";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { connectActionSheet } from "@expo/react-native-action-sheet";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { colors, mobileStyles as styles } from "loot-design/src/style";
+import * as actions from "loot-core/src/client/actions";
+import { RectButton } from "react-native-gesture-handler";
+import { Button } from "loot-design/src/components/mobile/common";
+import { ListItem, ROW_HEIGHT } from "loot-design/src/components/mobile/table";
+import Loading from "loot-design/src/svg/v1/AnimatedLoading";
+import CloudCheck from "loot-design/src/svg/v1/CloudCheck";
+import CloudDownload from "loot-design/src/svg/v1/CloudDownload";
+import CloudUnknown from "loot-design/src/svg/v2/CloudUnknown";
+import FileDouble from "loot-design/src/svg/v1/FileDouble";
+import RefreshArrow from "loot-design/src/svg/v2/RefreshArrow";
+import DotsHorizontalTriple from "loot-design/src/svg/v1/DotsHorizontalTriple";
+import Modal from "../modals/Modal";
+import UserButton from "./UserButton";
 
 function getFileDescription(file) {
-  if (file.state === 'unknown') {
+  if (file.state === "unknown") {
     return (
       "This is a cloud-based file but it's state is unknown because you " +
-      'are offline.'
+      "are offline."
     );
   }
 
   if (file.encryptKeyId) {
     if (file.hasKey) {
-      return 'This file is encrypted and you have the key to access it.';
+      return "This file is encrypted and you have the key to access it.";
     }
-    return 'This file is encrypted and you do not have the key for it.';
+    return "This file is encrypted and you do not have the key for it.";
   }
 
   return null;
@@ -40,12 +39,12 @@ function getFileDescription(file) {
 
 function getActionsForFile(file, onDelete) {
   let title = getFileDescription(file);
-  let options = [{ title: 'Delete', handler: onDelete }];
+  let options = [{ title: "Delete", handler: onDelete }];
 
   return {
     title,
-    options: options.map(opt => opt.title),
-    handler: idx => idx < options.length && options[idx].handler()
+    options: options.map((opt) => opt.title),
+    handler: (idx) => idx < options.length && options[idx].handler(),
   };
 }
 
@@ -54,17 +53,17 @@ function FileIcon({ state, style }) {
   let color = colors.n1;
 
   switch (state) {
-    case 'unknown':
+    case "unknown":
       Icon = CloudUnknown;
       color = colors.n7;
       break;
-    case 'remote':
+    case "remote":
       Icon = CloudDownload;
       break;
-    case 'local':
+    case "local":
       Icon = FileDouble;
       break;
-    case 'broken':
+    case "broken":
       Icon = CloudUnknown;
       color = colors.n7;
       break;
@@ -80,7 +79,7 @@ function FileIcon({ state, style }) {
         width: 20,
         height: 20,
         color,
-        ...style
+        ...style,
       }}
     />
   );
@@ -88,13 +87,13 @@ function FileIcon({ state, style }) {
 
 function showBrokenMessage(file, showActionSheetWithOptions, onDelete) {
   let { options, title, handler } = getActionsForFile(file, onDelete);
-  options.push('Cancel');
+  options.push("Cancel");
 
   showActionSheetWithOptions(
     {
       options,
       cancelButtonIndex: options.length - 1,
-      title
+      title,
     },
     handler
   );
@@ -104,19 +103,19 @@ function DetailsButton({ file, style, showActionSheetWithOptions, onDelete }) {
   let [loading, setLoading] = useState(false);
 
   function openMenu() {
-    if (file.state === 'unknown') {
+    if (file.state === "unknown") {
       alert(getFileDescription(file));
       return;
     }
 
     let { options, title, handler } = getActionsForFile(file, onDelete);
-    options.push('Cancel');
+    options.push("Cancel");
 
     showActionSheetWithOptions(
       {
         options,
         cancelButtonIndex: options.length - 1,
-        title
+        title,
       },
       handler
     );
@@ -125,12 +124,12 @@ function DetailsButton({ file, style, showActionSheetWithOptions, onDelete }) {
   return (
     <Button
       bare
-      style={{ padding: 7, backgroundColor: 'transparent' }}
+      style={{ padding: 7, backgroundColor: "transparent" }}
       hitSlop={{
         left: 10,
         right: 10,
         top: 10,
-        bottom: 10
+        bottom: 10,
       }}
       onPress={openMenu}
     >
@@ -146,7 +145,7 @@ function EmptyMessage() {
         fontSize: 17,
         margin: 20,
         color: colors.n5,
-        textAlign: 'center'
+        textAlign: "center",
       }}
     >
       No existing files. Create one below!
@@ -180,17 +179,17 @@ function File({ file, showActionSheetWithOptions, onSelect, onDelete }) {
     <ListItem
       style={{
         paddingHorizontal: 0,
-        alignItems: 'stretch',
-        flexDirection: 'column'
+        alignItems: "stretch",
+        flexDirection: "column",
       }}
     >
       <RectButton onPress={onSelect}>
         <View
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
+            flexDirection: "row",
+            alignItems: "center",
             paddingHorizontal: 15,
-            height: ROW_HEIGHT
+            height: ROW_HEIGHT,
           }}
         >
           <FileIcon state={file.state} />
@@ -198,7 +197,7 @@ function File({ file, showActionSheetWithOptions, onSelect, onDelete }) {
             style={[
               styles.text,
               { flex: 1, marginLeft: 7 },
-              file.state === 'broken' && { color: colors.n7 }
+              file.state === "broken" && { color: colors.n7 },
             ]}
           >
             {file.name}
@@ -218,11 +217,11 @@ class BudgetList extends React.Component {
   componentDidMount() {
     // Status bar won't change unless we do it imperatively?? When you
     // close the file it's stuck in dark mode
-    StatusBar.setBarStyle('light-content');
+    StatusBar.setBarStyle("light-content");
   }
 
-  onDelete = file => {
-    this.props.navigation.navigate('DeleteFile', { file });
+  onDelete = (file) => {
+    this.props.navigation.navigate("DeleteFile", { file });
   };
 
   onCreate = () => {
@@ -239,17 +238,17 @@ class BudgetList extends React.Component {
       loadAllFiles,
       getUserData,
       showActionSheetWithOptions,
-      keyId
+      keyId,
     } = this.props;
 
     return (
-      <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
+      <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
         <Modal
           title="Select a file"
           backgroundColor="white"
           allowScrolling={false}
           showOverlay={false}
-          edges={['top']}
+          edges={["top"]}
           rightButton={
             <RefreshButton
               onRefresh={() => {
@@ -268,11 +267,11 @@ class BudgetList extends React.Component {
                 file={file}
                 showActionSheetWithOptions={showActionSheetWithOptions}
                 onSelect={() => {
-                  if (file.state === 'broken') {
+                  if (file.state === "broken") {
                     showBrokenMessage(file, showActionSheetWithOptions, () =>
                       this.onDelete(file)
                     );
-                  } else if (file.state === 'remote') {
+                  } else if (file.state === "remote") {
                     this.props.downloadBudget(file.cloudFileId);
                   } else {
                     this.props.loadBudget(file.id);
@@ -281,15 +280,15 @@ class BudgetList extends React.Component {
                 onDelete={this.onDelete}
               />
             )}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             style={{ flex: 1 }}
           />
           <View
             style={{
-              alignItems: 'center',
+              alignItems: "center",
               marginHorizontal: 10,
               marginVertical: 15,
-              flexDirection: 'row'
+              flexDirection: "row",
             }}
           >
             <Button primary style={{ flex: 1 }} onPress={() => this.onCreate()}>
@@ -301,7 +300,6 @@ class BudgetList extends React.Component {
           navigation={navigation}
           keyId={keyId}
           onLogOut={() => {
-            iap.resetUser();
             this.props.signOut();
           }}
         />
@@ -311,10 +309,10 @@ class BudgetList extends React.Component {
 }
 
 export default connect(
-  state => ({
+  (state) => ({
     files: state.budgets.allFiles,
     globalPrefs: state.prefs.global,
-    keyId: state.prefs.global.keyId
+    keyId: state.prefs.global.keyId,
   }),
-  dispatch => bindActionCreators(actions, dispatch)
+  (dispatch) => bindActionCreators(actions, dispatch)
 )(connectActionSheet(BudgetList));
